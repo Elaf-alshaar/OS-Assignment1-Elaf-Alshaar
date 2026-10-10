@@ -318,7 +318,7 @@ implement automated unit test cases early in the development process to verify t
 
 **Your Answer:** *(3-5 sentences)*
 
-[Write your answer here.]
+[In operating systems, a process is an independent execution unit with its own isolated memory space, whereas a thread is a lightweight unit within a process that shares memory and resources with other threads. We used threads in this assignment because creating separate OS processes involves significantly higher creation overhead and slower context switching compared to lightweight thread management. In our project, the class named Process is simply a simulated data structure holding process metrics, which is executed by a real Java thread using new Thread(process) inside addProcessToQueue(). Using Java threads allowed us to easily simulate Round Robin CPU scheduling using shared data structures like the ready queue without needing complex inter process communication mechanisms]
 
 ## Question 2: Ready Queue Behavior
 
@@ -330,15 +330,25 @@ implement automated unit test cases early in the development process to verify t
 
 **Your Answer:** *(3-5 sentences)*
 
-[Write your answer here.]
+[in Round-Robin scheduling, when a process cannot complete its execution within the assigned time quantum, it yields the CPU, increments the context switch counter, and is re-queued at the back of the ready queue. In my simulation run, process P2 had a total burst time of 3802ms, which exceeds the 2000ms time quantum. As a result, P2 was re-queued 1 time after its initial entry, executing a first quantum of 2000ms and a second remaining quantum of 1802ms before finishing. Re-queueing is essential for fairness because it prevents long processes from monopolizing the CPU.]
 
 Example from my output:
 ```
-[Paste a relevant snippet from your program output here showing a process being re-queued]
+[? P2 executing quantum [2000ms] 
+  ? Quantum progress: [███████████████] 100%
+  ? P2 completed quantum 2000ms │ Overall progress: [██████████░░░░░░░░░░] 52%
+     Remaining time: 1802ms
+  ? P2 yields CPU for context switch
+
+P2  priority: 1 enters the ready queue..
+  ? P2 added to ready queue │ Burst time: 3802ms
+┌─ Ready Queue ─────────────────────────────────────────────────────────────────
+│ [P4 ? P5 ? P6 ? P7 ? P8 ? P9 ? P10 ? P11 ? P12 ? P13 ? P14 ? P15 ? P16 ? P17 ? P18 ? P19 ? P20 ? P2]
+└───────────────────────────────────────────────────────────────────────────────]
 ```
 
 **Explanation of example:**
-[Explain what is happening in the output snippet you pasted.]
+[This output snippet shows process P2 executing its first 2000ms time quantum on the CPU. Because its remaining burst time is 1802ms, P2 yields the CPU for a context switch and is re-added to the tail of the ready queue behind P20, allowing other queued processes to receive CPU time fairly.]
 
 ## Question 3: Thread Lifecycle
 
@@ -348,15 +358,15 @@ Example from my output:
 
 **Your Answer:** *(3-5 sentences overall; one short explanation per state)*
 
-1. **New**: [When is P1 in the New state?]
+1. **New**: [P1 enters the New state when its Thread object is created in addProcessToQueue() via Thread thread = new Thread(process).]
 
-2. **Runnable**: [When does P1 become Runnable?]
+2. **Runnable**: [P1 transitions to Runnable when thread.start() is called, making it eligible for CPU scheduling and adding it to the ready queue.]
 
-3. **Running**: [When is P1 Running?]
+3. **Running**: [P1 enters the Running state when the scheduler allocates CPU time to it, invoking its run() method where it executes its quantum slice.]
 
-4. **Waiting**: [When and why would a thread be Waiting?]
+4. **Waiting**: [p1's thread enters Timed Waiting when Thread.sleep() is called inside run() to simulate execution, while the main scheduler thread enters Waiting by calling thread.join() to wait for P1 to complete.]
 
-5. **Terminated**: [When is P1 Terminated?]
+5. **Terminated**: [P1 transitions to Terminated after completing its total burst time (1913ms), exiting its run() method completely.]
 
 ## Question 4: Real-World Applications
 
@@ -369,29 +379,29 @@ Example from my output:
 ### Example 1 (operating-system level): [Name of scenario]
 
 **Description**:
-[Describe the real-world scenario.]
+[in operating system CPU scheduler uses Round-Robin scheduling to allocate core processor execution time among multiple active application threads running on a computer system. In this OS scenario, each open software application represents a simulated process thread, the predefined OS time slice (typically 10ms to 100ms) acts as the time quantum, and saving CPU hardware registers represents a context switch.]
 
 **Why Round-Robin works well here**:
-[Fairness, responsiveness, predictability?]
+[Round-Robin provides high responsiveness and fairness by guaranteeing that every running application regularly gets CPU execution time. This prevents long background processing operations from starving light user tasks.]
 
 ### Example 2: [Name of application/scenario]
 
 **Description**:
-[Describe the real-world scenario or application.]
+[an online multiplayer game server uses Round-Robin scheduling to process game state updates and incoming player movement packets across hundreds of active client connections. Here, each connected player session acts as a process thread, the allotted network update processing window per player serves as the time quantum, and switching execution buffers represents a context switch.]
 
 **Why Round-Robin works well here**:
-[Fairness, responsiveness, predictability?]
+[Round-Robin delivers high predictability and fairness so that every connected player receives equal CPU processing time per tick. This prevents any single player's heavy action request from delaying other players' updates, keeping game latency stable across all player connections.]
 
 ## Summary
 
 **Key concepts I understood through these questions:**
-1.
-2.
-3.
+1.The fundamental differences between lightweight Java threads and heavyweight operating system processes.
+2.how thread state transitions move between New, Runnable, Running, Timed Waiting, and Terminated states during scheduling loops.
+3.how Round-Robin scheduling maintains fairness by re-queueing unfinished tasks after time quantum expiration
 
 **Concepts I need to study more:**
-1.
-2.
+1.multi-level feedback queue scheduling algorithms and priority inheritance mechanisms.
+2.advanced inter-process communication (IPC) and memory synchronization locks in concurrent multi-threaded systems.
 
 ---
 
@@ -400,7 +410,7 @@ Example from my output:
 > ⚠️ **WARNING:** Go through every line. Late submission costs **-1 mark per day**, and the deadline is **October 10, 2026**.
 
 **Repository**
-- [ ] Repository is **PUBLIC** (Settings → Danger Zone → Visibility)
+- [x] Repository is **PUBLIC** (Settings → Danger Zone → Visibility)
 - [ ] Repository is renamed to `OS-Assignment1-YourFirstName-YourLastName`
 - [ ] GitHub account uses the university email (`@std.psau.edu.sa`)
 
